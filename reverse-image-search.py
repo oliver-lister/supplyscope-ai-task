@@ -82,6 +82,21 @@ def extract_features_clip(image):
         image_features = model.get_image_features(**inputs1)
     return image_features
 
+
+def image_similarity(url):
+    image = load_image(url)
+
+    if image is None:
+        return {"error": f"Failed to load image from {url}. Make sure the URL or file path is correct and the file type is supported (JPG, JPEG, PNG)."}
+    
+    image_features=extract_features_clip(image)
+    similarity_scores = [cosine_similarity(image_features, i[0]) for i in features]
+    merged_dict=dict(zip(img_names,similarity_scores))
+    sorted_dict = dict(sorted(merged_dict.items(), key=lambda item: item[1],reverse=True))
+    return sorted_dict
+
+# !~~TEST~~!
+
 filename='images.pkl'
 
 # Check if 'images.pkl' already exists
@@ -102,22 +117,7 @@ else:
         pickle.dump(total_image_features, f)
     features = total_image_features
 
-
-def image_similarity(url):
-    image = load_image(url)
-
-    if image is None:
-        return {"error": f"Failed to load image from {url}. Make sure the URL or file path is correct and the file type is supported (JPG, JPEG, PNG)."}
-    
-    image_features=extract_features_clip(image)
-    similarity_scores = [cosine_similarity(image_features, i[0]) for i in features]
-    merged_dict=dict(zip(img_names,similarity_scores))
-    sorted_dict = dict(sorted(merged_dict.items(), key=lambda item: item[1],reverse=True))
-    return sorted_dict
-
-# !~~TEST~~!
-
-test_url = images[0]  # Use the first image URL from the dataset
+test_url = "https://cdn1.polaris.com/globalassets/ranger/2025/model/vehicle-cards/ranger-xp-kinetic-premium-my24-b6c9-icy-white-pearl-r24e3cc2bd.png"  # Use image of Polaris Ranger found on google images
 results = image_similarity(test_url)
 
 # Example of sorting and displaying the top N closest matches
