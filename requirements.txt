@@ -1,0 +1,10 @@
+torch
+Pillow
+transformers
+requests
+numpy
+pandas
+urllib3==1.26.16
+
+
+
